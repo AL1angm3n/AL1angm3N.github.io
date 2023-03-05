@@ -83,8 +83,7 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <hr>
-<hr>
+        <p>title: 系统调用与函数调用的区别以及32位机与64位机在这两方面的区别</p>
 <h2 id="系统调用与函数调用的区别以及32位机与64位机在这两方面的区别"><a href="#系统调用与函数调用的区别以及32位机与64位机在这两方面的区别" class="headerlink" title="系统调用与函数调用的区别以及32位机与64位机在这两方面的区别"></a>系统调用与函数调用的区别以及32位机与64位机在这两方面的区别</h2><h4 id="1系统调用与函数调用的区别"><a href="#1系统调用与函数调用的区别" class="headerlink" title="1系统调用与函数调用的区别"></a>1系统调用与函数调用的区别</h4><p>&amp;emsp;&amp;emsp;操作系统实现提供的所有系统调用所构成的集合即程序接口（用户可以直接使用的接口）或应用编程接口(Application Programming Interface，API)用户通过程序间接使用的接口）。是应用程序同系统之间的接口。<br>&amp;emsp;函数调用是调用函数库中的一个程序，而系统调用是调用系统内核的服务。函数调用是在用户地址空间执行，而系统调用是在内核地址空间执行。<br>函数调用的运行时间属于“用户”时间，而系统调用的运行时间属于“系统”时间。<br>&amp;emsp;&amp;emsp;总而言之，二者并不一样。</p>
 <h4 id="2-系统调用的区别"><a href="#2-系统调用的区别" class="headerlink" title="2.系统调用的区别"></a>2.系统调用的区别</h4><p>&amp;emsp;&amp;emsp;32位系统调用使用 “ int 80h “,64位系统调用使用 “ syscall “ （汇编代码就是syscall，可由ROPgadget查找）。32的系统调用号与64位的也不大一样。比如32位是：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define __NR_execve 11</span><br></pre></td></tr></table></figure>
@@ -98,7 +97,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/05/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A32%E4%BD%8D%E6%9C%BA%E4%B8%8E64%E4%BD%8D%E6%9C%BA%E5%9C%A8%E8%BF%99%E4%B8%A4%E6%96%B9%E9%9D%A2%E7%9A%84%E5%8C%BA%E5%88%AB/" data-id="clevjacl40004yov98exxg1zn" data-title="" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2023/03/05/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A32%E4%BD%8D%E6%9C%BA%E4%B8%8E64%E4%BD%8D%E6%9C%BA%E5%9C%A8%E8%BF%99%E4%B8%A4%E6%96%B9%E9%9D%A2%E7%9A%84%E5%8C%BA%E5%88%AB/" data-id="clevjidhy0003vcv99atge0t7" data-title="" class="article-share-link">Share</a>
       
       
       
@@ -122,7 +121,8 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h2 id="我的Pwn学习之路——buuctf-pwn-wp部分"><a href="#我的Pwn学习之路——buuctf-pwn-wp部分" class="headerlink" title="我的Pwn学习之路——buuctf pwn wp部分"></a>我的Pwn学习之路——buuctf pwn wp部分</h2><h4 id="1-test-your-nc"><a href="#1-test-your-nc" class="headerlink" title="1. test_your_nc"></a>1. test_your_nc</h4><p>&amp;emsp;&amp;emsp;两种解法，一种方法直接nc；一种方法利用pwntools。<br>&amp;emsp;&amp;emsp;第一种方法，在Linux命令行下输入：nc ip地址 ip端口<br><img src="C:\Users\hp\Desktop\buuctf_post\微信截图_20230127195055.png"></p>
+        <p>title:我的Pwn学习之路——buuctf pwn wp部分</p>
+<h2 id="我的Pwn学习之路——buuctf-pwn-wp部分"><a href="#我的Pwn学习之路——buuctf-pwn-wp部分" class="headerlink" title="我的Pwn学习之路——buuctf pwn wp部分"></a>我的Pwn学习之路——buuctf pwn wp部分</h2><h4 id="1-test-your-nc"><a href="#1-test-your-nc" class="headerlink" title="1. test_your_nc"></a>1. test_your_nc</h4><p>&amp;emsp;&amp;emsp;两种解法，一种方法直接nc；一种方法利用pwntools。<br>&amp;emsp;&amp;emsp;第一种方法，在Linux命令行下输入：nc ip地址 ip端口<br><img src="C:\Users\hp\Desktop\buuctf_post\微信截图_20230127195055.png"></p>
 <p>&amp;emsp;&amp;emsp;第二种方法，直接利用pwntools的remote连接获得shell进行交互：<img src="C:\Users\hp\Desktop\buuctf_post\test2.png"  /></p>
 <p>&amp;emsp;&amp;emsp;<font color="HotPink">扩展：nc，netcat的简写，是一个网络工具，有着网络界的瑞士军刀之称。nc在linux系统中实际命令为ncat，nc是软连接到ncat。nc命令的主要作用：</font></p>
 <ul>
@@ -145,7 +145,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/" data-id="clevjacky0002yov9d87ycsrs" data-title="" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/" data-id="clevjidhr0002vcv97g68ffyh" data-title="" class="article-share-link">Share</a>
       
       
       
@@ -169,7 +169,8 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h2 id="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"><a href="#格式化字符串漏洞的原理与利用——之我的不理解部分的理解" class="headerlink" title="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"></a>格式化字符串漏洞的原理与利用——之我的不理解部分的理解</h2><h4 id="1-偏移量（首地址偏移）与函数参数的调用"><a href="#1-偏移量（首地址偏移）与函数参数的调用" class="headerlink" title="1.偏移量（首地址偏移）与函数参数的调用"></a>1.偏移量（首地址偏移）与函数参数的调用</h4><p>&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。<br>&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原因是忽略了：原来printf也是个函数！父函数中又调用了printf这个子函数，所以在原来的父函数开辟的栈帧上会在开辟一个新的属于printf函数的栈。而AAAA既做为printf的函数，又作为父函数的输入参数。所以，可以如下拙略的图示：<br><img src="C:\Users\hp\Desktop\format_str.png"></p>
+        <p>title: 格式化字符串漏洞的原理与利用——之我的不理解部分的理解</p>
+<h2 id="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"><a href="#格式化字符串漏洞的原理与利用——之我的不理解部分的理解" class="headerlink" title="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"></a>格式化字符串漏洞的原理与利用——之我的不理解部分的理解</h2><h4 id="1-偏移量（首地址偏移）与函数参数的调用"><a href="#1-偏移量（首地址偏移）与函数参数的调用" class="headerlink" title="1.偏移量（首地址偏移）与函数参数的调用"></a>1.偏移量（首地址偏移）与函数参数的调用</h4><p>&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。<br>&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原因是忽略了：原来printf也是个函数！父函数中又调用了printf这个子函数，所以在原来的父函数开辟的栈帧上会在开辟一个新的属于printf函数的栈。而AAAA既做为printf的函数，又作为父函数的输入参数。所以，可以如下拙略的图示：<br><img src="C:\Users\hp\Desktop\format_str.png"></p>
 <p>&amp;emsp;&amp;emsp;这里感觉还得给自己强化一下这个函数的传参,以这个为例：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;AAAA,%d,%c,%s&quot;</span>,a,b,c);</span><br></pre></td></tr></table></figure>
 
@@ -199,7 +200,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" data-id="clevjacl00003yov9ciuy7bp9" data-title="" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" data-id="clevjidhz0004vcv9cbcx9k5y" data-title="" class="article-share-link">Share</a>
       
       
       
@@ -242,7 +243,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/12/22/1/" data-id="clevjackq0000yov90dbubax2" data-title="Xuexitong with Tampermonkey!" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/12/22/1/" data-id="clevjidhj0000vcv9acqscse2" data-title="Xuexitong with Tampermonkey!" class="article-share-link">Share</a>
       
       
       
@@ -285,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/12/22/hello-world/" data-id="clevjackv0001yov944d29sbv" data-title="Hello World" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2022/12/22/hello-world/" data-id="clevjidhp0001vcv9akozcaqx" data-title="Hello World" class="article-share-link">Share</a>
       
       
       
