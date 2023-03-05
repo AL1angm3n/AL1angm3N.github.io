@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="格式化字符串漏洞的原理与利用——之我的不理解部分的理解1.偏移量（首地址偏移）与函数参数的调用&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="格式化字符串漏洞的原理与利用——之我的不理解部分的理解1.偏移量（首地址偏移）与函数参数的调用&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:\Users\hp\Desktop\format_str.png">
+<meta property="article:published_time" content="2023-03-05T14:47:15.860Z">
+<meta property="article:modified_time" content="2023-03-01T12:06:59.629Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:\Users\hp\Desktop\format_str.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-格式化字符串漏洞的原理与利用——之我的不理解部分的理解" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" class="article-date">
+  <time class="dt-published" datetime="2023-03-05T14:47:15.860Z" itemprop="datePublished">2023-03-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"><a href="#格式化字符串漏洞的原理与利用——之我的不理解部分的理解" class="headerlink" title="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"></a>格式化字符串漏洞的原理与利用——之我的不理解部分的理解</h2><h4 id="1-偏移量（首地址偏移）与函数参数的调用"><a href="#1-偏移量（首地址偏移）与函数参数的调用" class="headerlink" title="1.偏移量（首地址偏移）与函数参数的调用"></a>1.偏移量（首地址偏移）与函数参数的调用</h4><p>&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。<br>&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原因是忽略了：原来printf也是个函数！父函数中又调用了printf这个子函数，所以在原来的父函数开辟的栈帧上会在开辟一个新的属于printf函数的栈。而AAAA既做为printf的函数，又作为父函数的输入参数。所以，可以如下拙略的图示：<br><img src="C:\Users\hp\Desktop\format_str.png"></p>
+<p>&amp;emsp;&amp;emsp;这里感觉还得给自己强化一下这个函数的传参,以这个为例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;AAAA,%d,%c,%s&quot;</span>,a,b,c);</span><br></pre></td></tr></table></figure>
+
+<p>printf函数的参数应从右往左依次入栈c,b,a依次入栈，虽然printf参数可变，但有一点不变，就是它起码有一个参数，那就是它要打印的字符串，也就是AAAA，但其实printf函数的第一个参数并不是字符串本身，而是该字符串的地址，真正的字符串并不存在栈里。</p>
+<h4 id="2-n的应用（覆写任意地址）"><a href="#2-n的应用（覆写任意地址）" class="headerlink" title="2.%n的应用（覆写任意地址）"></a>2.%n的应用（覆写任意地址）</h4><p>&amp;emsp;&amp;emsp;一般利用%n来修改参数里的内容，由此可以将未知变为已知。它的定义是：%n,不输出字符，但是把已经成功输出的字符个数写入对应的整型指针参数所指的变量。用法形如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...[overwrite addr]....%[overwrite offset]$n</span><br></pre></td></tr></table></figure>
+
+<p>其中… 表示我们的填充内容，overwrite addr 表示我们所要覆盖的地址，overwrite offset 地址表示我们所要覆盖的地址存储的位置为输出函数的格式化字符串的第几个参数。一般操作步骤：确定覆盖地址、确定相对偏移、进行覆盖。这里我们所要覆盖的地址就相当于AAAA，而我们以确定其在第n个参数的位置，则只控制n之前的填充内容（包括所要写入的地址）相当于几个字符，就可将几写入该地址。<br>&amp;emsp;&amp;emsp;注：%n是写入目标空间4字节，%hn是写入目标空间2字节，%hhn是写入目标空间1字节，%lln是写入目标空间8字节。</p>
+<h4 id="3-pwntools里的FmtStr格式化字符串类"><a href="#3-pwntools里的FmtStr格式化字符串类" class="headerlink" title="3.pwntools里的FmtStr格式化字符串类"></a>3.pwntools里的FmtStr格式化字符串类</h4><p>&amp;emsp;&amp;emsp;格式化字符串漏洞如果要修改某个内存地址的内容常常需要构造比较长的payload,而pwntools里的FmtStr格式化字符串类可以大大简便该工作</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmtstr_payload(offset, writes, numbwritten=0, write_size=&#x27;byte&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p>第一个参数表示格式化字符串的偏移；<br>第二个参数表示需要利用%n写入的数据，采用字典形式，如我们要将printf的GOT数据改为system函数地址，就写成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;printfGOT: systemAddress&#125;；</span><br></pre></td></tr></table></figure>
+
+<p>第三个参数表示已经输出的字符个数；<br>第四个参数表示写入方式，是按字节（byte）、按双字节（short）还是按四字节（int），对应着hhn、hn和n，默认值是byte，即按hhn写。<br>其返回值即为payload<br>其常用的形式是:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmtstr_payload(offset,&#123;address1:value1&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" data-id="clevii99l0001e8v95zgr9b5y" data-title="" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/12/22/1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Xuexitong with Tampermonkey!</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/03/05/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A32%E4%BD%8D%E6%9C%BA%E4%B8%8E64%E4%BD%8D%E6%9C%BA%E5%9C%A8%E8%BF%99%E4%B8%A4%E6%96%B9%E9%9D%A2%E7%9A%84%E5%8C%BA%E5%88%AB/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/12/22/1/">Xuexitong with Tampermonkey!</a>
+          </li>
+        
+          <li>
+            <a href="/2022/12/22/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

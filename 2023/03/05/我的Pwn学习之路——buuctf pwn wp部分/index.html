@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="我的Pwn学习之路——buuctf pwn wp部分1. test_your_nc&amp;emsp;&amp;emsp;两种解法，一种方法直接nc；一种方法利用pwntools。&amp;emsp;&amp;emsp;第一种方法，在Linux命令行下输入：nc ip地址 ip端口 &amp;emsp;&amp;emsp;第二种方法，直接利用pwntools的remote连接获得shell进行交互">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="我的Pwn学习之路——buuctf pwn wp部分1. test_your_nc&amp;emsp;&amp;emsp;两种解法，一种方法直接nc；一种方法利用pwntools。&amp;emsp;&amp;emsp;第一种方法，在Linux命令行下输入：nc ip地址 ip端口 &amp;emsp;&amp;emsp;第二种方法，直接利用pwntools的remote连接获得shell进行交互">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20230127195055.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\test2.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\rip1.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\rip2.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\rip3.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\rip4.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\rip5.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\rip6.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\w1.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\w2.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\w3.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\w4.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\w5.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\cn1.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\cn2.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\pw3.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\pw1.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\PWN51.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\PWN5.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\PWN52.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\PWN53.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\c11.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\c12.png">
+<meta property="og:image" content="c:\Users\hp\Desktop\buuctf_post\c13.png">
+<meta property="article:published_time" content="2023-03-05T14:47:20.626Z">
+<meta property="article:modified_time" content="2023-03-04T06:42:38.283Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:\Users\hp\Desktop\buuctf_post\%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20230127195055.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-我的Pwn学习之路——buuctf pwn wp部分" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/" class="article-date">
+  <time class="dt-published" datetime="2023-03-05T14:47:20.626Z" itemprop="datePublished">2023-03-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="我的Pwn学习之路——buuctf-pwn-wp部分"><a href="#我的Pwn学习之路——buuctf-pwn-wp部分" class="headerlink" title="我的Pwn学习之路——buuctf pwn wp部分"></a>我的Pwn学习之路——buuctf pwn wp部分</h2><h4 id="1-test-your-nc"><a href="#1-test-your-nc" class="headerlink" title="1. test_your_nc"></a>1. test_your_nc</h4><p>&amp;emsp;&amp;emsp;两种解法，一种方法直接nc；一种方法利用pwntools。<br>&amp;emsp;&amp;emsp;第一种方法，在Linux命令行下输入：nc ip地址 ip端口<br><img src="C:\Users\hp\Desktop\buuctf_post\微信截图_20230127195055.png"></p>
+<p>&amp;emsp;&amp;emsp;第二种方法，直接利用pwntools的remote连接获得shell进行交互：<img src="C:\Users\hp\Desktop\buuctf_post\test2.png"  /></p>
+<p>&amp;emsp;&amp;emsp;<font color="HotPink">扩展：nc，netcat的简写，是一个网络工具，有着网络界的瑞士军刀之称。nc在linux系统中实际命令为ncat，nc是软连接到ncat。nc命令的主要作用：</font></p>
+<ul>
+<li><font color="HotPink">实现任意TCP&#x2F;UDP端口的侦听，nc可以作为server以TCP或UDP方式侦听指定窗口</font></li>
+<li><font color="HotPink">端口的扫描，nc可以作为client发起TCP或UDP连接</font></li>
+<li><font color="HotPink">机器之间传入文件以及机器之间网络测速</font><br><font color="HotPink">(具体可通过nc –help实现相关命令的帮助)</font></li>
+</ul>
+<h4 id="2-rip"><a href="#2-rip" class="headerlink" title="2. rip"></a>2. rip</h4><p>&amp;emsp;&amp;emsp;打开题目，得到名为pwn1的ELF文件后：<br>&amp;emsp;&amp;emsp;首先，先利用checksec检测一下文件的保护机制：<img src="C:\Users\hp\Desktop\buuctf_post\rip1.png"><br>&amp;emsp;&amp;emsp;发现没有任何保护机制，猜测可能为栈溢出漏洞，可能找到后门函数或者自己写入shellcode。<br>&amp;emsp;&amp;emsp;而后将pwn1拖入IDA中进行反编译，得到：<img src="C:\Users\hp\Desktop\buuctf_post\rip2.png">可以看到定义了一个s[15]，距离rbp0xF，且gets函数没有限制输入，存在溢出漏洞，同时我们又发现：<br><img src="C:\Users\hp\Desktop\buuctf_post\rip3.png"><br>存在后门函数，执行“bin&#x2F;sh”的地址为0x401186，则可编写exp为：<br><img src="C:\Users\hp\Desktop\buuctf_post\rip4.png"><br><img src="C:\Users\hp\Desktop\buuctf_post\rip5.png"></p>
+<p>（由图，s距return adress(15+8) ，所以需填入23个)，获得shell与flag:<br><img src="C:\Users\hp\Desktop\buuctf_post\rip6.png"></p>
+<h4 id="3-warmup-csaw-2016"><a href="#3-warmup-csaw-2016" class="headerlink" title="3. warmup_csaw_2016"></a>3. warmup_csaw_2016</h4><p>&amp;emsp;&amp;emsp;老样子，先用checksec检测一下ELF文件的保护机制，以了解该使用怎样的绕过方法。<br><img src="C:\Users\hp\Desktop\buuctf_post\w1.png"><br>&amp;emsp;&amp;emsp;什么都没开，那么我们再将其拖入IDA中看看：<br><img src="C:\Users\hp\Desktop\buuctf_post\w2.png"></p>
+<p>&amp;emsp;&amp;emsp;此时应应能敏感地感到gets函数应存在漏洞，且v5[64]，距离rbp0x40，大于64，所以存在漏洞。同3，需填入（0x40+8)，此时再考虑，return address上是填入已有的后门函数，还是自己写入shellcode。我们点进sub_40060D函数又发现：<img src="C:\Users\hp\Desktop\buuctf_post\w3.png"><br>其执行cat flag.txt的地址为0x400611,所以编写exp为：<br><img src="C:\Users\hp\Desktop\buuctf_post\w4.png"><br><img src="C:\Users\hp\Desktop\buuctf_post\w5.png"></p>
+<h4 id="4-ciscn-2019-n-1"><a href="#4-ciscn-2019-n-1" class="headerlink" title="4.ciscn_2019_n_1"></a>4.ciscn_2019_n_1</h4><p>&amp;emsp;&amp;emsp;checksec后发现只开了NX保护，拖入IDA发现主体为func函数<br><img src="C:\Users\hp\Desktop\buuctf_post\cn1.png"><br>gets函数存在溢出点，但存在现有的system函数，但要满足要求，即要令v2&#x3D;&#x3D;11.28125,那我们可以不必再去覆盖return address ，可以直接覆盖v2，令v2等于11.28125。但浮点数的十六进制表示是为我们所不熟悉的。可利用网站：<a target="_blank" rel="noopener" href="https://lostphp.com/hexconvert/%EF%BC%8C%E5%B0%8611.1285%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%EF%BC%8C%E8%A6%86%E7%9B%96v2%EF%BC%8C%E5%BE%97%E5%88%B0flag%E3%80%82exp%E5%A6%82%E4%B8%8B%EF%BC%9A">https://lostphp.com/hexconvert/，将11.1285转换为十六进制，覆盖v2，得到flag。exp如下：</a><br><img src="C:\Users\hp\Desktop\buuctf_post\cn2.png"></p>
+<h4 id="5-pwn1-sctf-2016"><a href="#5-pwn1-sctf-2016" class="headerlink" title="5.pwn1_sctf_2016"></a>5.pwn1_sctf_2016</h4><p>&amp;emsp;&amp;emsp;checksec一下，发现只开了NX，拖入IDA后<br><img src="C:\Users\hp\Desktop\buuctf_post\pw3.png"><br>&amp;emsp;&amp;emsp;发现s有溢出的可能，但fgets只允许输入32个，无法溢出。但通过后续的一段C++程序可以发现，这是一个类似函数，用来replace,即将I转换成you，这样的话，我们可以输入20个I，就可以自动转换为60个字节，完成溢出。<br>&amp;emsp;&amp;emsp;同时又存在get_flah函数，则再将其覆盖return adress 即可。<br>exp如下：<br><img src="C:\Users\hp\Desktop\buuctf_post\pw1.png"></p>
+<h4 id="6-jarvisoj-level0"><a href="#6-jarvisoj-level0" class="headerlink" title="6.jarvisoj_level0"></a>6.jarvisoj_level0</h4><p>&amp;emsp;&amp;emsp;老题型，checksec一看只开了NX保护。拖入IDA中发现read函数存在溢出漏洞，并且存在callsystem的后门函数。则完成移除后，将后门函数的地址覆盖return address即可获得shell </p>
+<h4 id="7-第五空间2019-决赛-PWN5-格式化字符串漏洞"><a href="#7-第五空间2019-决赛-PWN5-格式化字符串漏洞" class="headerlink" title="7.[第五空间2019 决赛]PWN5  (格式化字符串漏洞)"></a>7.[第五空间2019 决赛]PWN5  (格式化字符串漏洞)</h4><p>&amp;emsp;&amp;emsp;checksec后发现开了NX和canary保护，同时又存在printf函数，这时已可以联想到格式化字符串漏洞，拖入IDA反汇编后发现：<img src="C:\Users\hp\Desktop\buuctf_post\PWN51.png"><br>&amp;emsp;&amp;emsp;程序大意是在bss段生成一个随机数，而后检测输入是否与该随机数相同，若相同则可获得shell。<br>&amp;emsp;&amp;emsp;程序漏洞就在于print(buf),存在格式化字符串漏洞，而我们的目的就可以通过格式化字符串漏洞里的%n$n来改写bss段的随机数，使其成为已知。则我们应先确定printf的一个参数所在父函数栈里的位置以获得偏移量（即第一个n，定位符)。可以以以下方法确定：<br><img src="C:\Users\hp\Desktop\buuctf_post\PWN5.png"><br>发现AAAA的二次出现是其后的第十个参数,则偏移量为10，则我们可通过%10$定位，而其前面还要有10个printf的输出，则我们通过addr%10$n就可使第十个参数上放有addr的地址，并将%前的字符数写入该址。<br>&amp;emsp;&amp;emsp;随机数地址：<img src="C:\Users\hp\Desktop\buuctf_post\PWN52.png"><br>因为为32位程序，所以addr相当于四个字符，则exp可写为：<img src="C:\Users\hp\Desktop\buuctf_post\PWN53.png"></p>
+<p>由于nptr为char型，所以我们将ox4转换为字符串型，用str函数（存疑！！！！）</p>
+<h4 id="8-ciscn-2019-c-1（ROP-ret2libc"><a href="#8-ciscn-2019-c-1（ROP-ret2libc" class="headerlink" title="8.ciscn_2019_c_1（ROP-ret2libc)"></a>8.ciscn_2019_c_1（ROP-ret2libc)</h4><p>&amp;emsp;&amp;emsp;checksec发现只开了NX，拖入IDA进行反汇编：<br><img src="C:\Users\hp\Desktop\buuctf_post\c11.png"><br>&amp;emsp;&amp;emsp;逐个查看函数发现encrypt函数可以做文章：</p>
+<p><img src="C:\Users\hp\Desktop\buuctf_post\c12.png"><br>明显地能看出：gets函数存在溢出漏洞，而后查看相关字符串，并无后门函数以及bin&#x2F;sh，不能ret2text和ret2syscall，所以我们可以考虑ret2libc：通过已经调用过的函数去泄露它在程序中的地址，因为：程序中的地址&#x3D;加载程序的基址+linc中函数的偏移量。可以通过溢出获得函数地址，再通过LibcSearcher得到对应libc中的偏移量，以得到基址。思路：<br><img src="C:\Users\hp\Desktop\buuctf_post\c13.png"></p>
+<h4 id="12-get-started-3dsctf-2016"><a href="#12-get-started-3dsctf-2016" class="headerlink" title="12.get_started_3dsctf_2016"></a>12.get_started_3dsctf_2016</h4><h4 id="13-OGeek2019-babyrop"><a href="#13-OGeek2019-babyrop" class="headerlink" title="13.[OGeek2019]babyrop"></a>13.[OGeek2019]babyrop</h4>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/" data-id="clevii99f0000e8v9ejl3bduz" data-title="" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/03/05/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A32%E4%BD%8D%E6%9C%BA%E4%B8%8E64%E4%BD%8D%E6%9C%BA%E5%9C%A8%E8%BF%99%E4%B8%A4%E6%96%B9%E9%9D%A2%E7%9A%84%E5%8C%BA%E5%88%AB/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title"></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/03/05/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A32%E4%BD%8D%E6%9C%BA%E4%B8%8E64%E4%BD%8D%E6%9C%BA%E5%9C%A8%E8%BF%99%E4%B8%A4%E6%96%B9%E9%9D%A2%E7%9A%84%E5%8C%BA%E5%88%AB/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2023/03/05/%E6%88%91%E7%9A%84Pwn%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E2%80%94%E2%80%94buuctf%20pwn%20wp%E9%83%A8%E5%88%86/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/12/22/1/">Xuexitong with Tampermonkey!</a>
+          </li>
+        
+          <li>
+            <a href="/2022/12/22/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
