@@ -6,16 +6,16 @@
   
   <title>Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="title: 格式化字符串漏洞的原理与利用——之我的不理解部分的理解 格式化字符串漏洞的原理与利用——之我的不理解部分的理解1.偏移量（首地址偏移）与函数参数的调用&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。&amp;a">
+  <meta name="description" content="title: 格式化字符串漏洞的原理与利用——之我的不理解部分的理解 格式化字符串漏洞的原理与利用——之我的不理解部分的理解">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo">
 <meta property="og:url" content="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="title: 格式化字符串漏洞的原理与利用——之我的不理解部分的理解 格式化字符串漏洞的原理与利用——之我的不理解部分的理解1.偏移量（首地址偏移）与函数参数的调用&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。&amp;a">
+<meta property="og:description" content="title: 格式化字符串漏洞的原理与利用——之我的不理解部分的理解 格式化字符串漏洞的原理与利用——之我的不理解部分的理解">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="c:\Users\hp\Desktop\format_str.png">
 <meta property="article:published_time" content="2023-03-05T14:47:15.860Z">
-<meta property="article:modified_time" content="2023-03-05T15:18:34.875Z">
+<meta property="article:modified_time" content="2023-03-05T15:22:48.139Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="c:\Users\hp\Desktop\format_str.png">
@@ -88,7 +88,9 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <p>title: 格式化字符串漏洞的原理与利用——之我的不理解部分的理解</p>
-<h2 id="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"><a href="#格式化字符串漏洞的原理与利用——之我的不理解部分的理解" class="headerlink" title="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"></a>格式化字符串漏洞的原理与利用——之我的不理解部分的理解</h2><h4 id="1-偏移量（首地址偏移）与函数参数的调用"><a href="#1-偏移量（首地址偏移）与函数参数的调用" class="headerlink" title="1.偏移量（首地址偏移）与函数参数的调用"></a>1.偏移量（首地址偏移）与函数参数的调用</h4><p>&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。<br>&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原因是忽略了：原来printf也是个函数！父函数中又调用了printf这个子函数，所以在原来的父函数开辟的栈帧上会在开辟一个新的属于printf函数的栈。而AAAA既做为printf的函数，又作为父函数的输入参数。所以，可以如下拙略的图示：<br><img src="C:\Users\hp\Desktop\format_str.png"></p>
+<h2 id="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"><a href="#格式化字符串漏洞的原理与利用——之我的不理解部分的理解" class="headerlink" title="格式化字符串漏洞的原理与利用——之我的不理解部分的理解"></a>格式化字符串漏洞的原理与利用——之我的不理解部分的理解</h2><span id="more"></span>
+
+<h4 id="1-偏移量（首地址偏移）与函数参数的调用"><a href="#1-偏移量（首地址偏移）与函数参数的调用" class="headerlink" title="1.偏移量（首地址偏移）与函数参数的调用"></a>1.偏移量（首地址偏移）与函数参数的调用</h4><p>&amp;emsp;&amp;emsp;在做这类题的时候，经常会有这样的操作：输入AAAA(或AAAAAAAA)-%x-%x-%x-%x-%x-%x-%x-%x-%x…,然后通过程序输出中的AAAA的二次出现，来确定这个“偏移量”。<br>&amp;emsp;&amp;emsp;我对这个“偏移量”的不理解的主要原因是忽略了：原来printf也是个函数！父函数中又调用了printf这个子函数，所以在原来的父函数开辟的栈帧上会在开辟一个新的属于printf函数的栈。而AAAA既做为printf的函数，又作为父函数的输入参数。所以，可以如下拙略的图示：<br><img src="C:\Users\hp\Desktop\format_str.png"></p>
 <p>&amp;emsp;&amp;emsp;这里感觉还得给自己强化一下这个函数的传参,以这个为例：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;AAAA,%d,%c,%s&quot;</span>,a,b,c);</span><br></pre></td></tr></table></figure>
 
@@ -118,7 +120,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" data-id="clevjidhz0004vcv9cbcx9k5y" data-title="" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2023/03/05/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E2%80%94%E2%80%94%E4%B9%8B%E6%88%91%E7%9A%84%E4%B8%8D%E7%90%86%E8%A7%A3%E9%83%A8%E5%88%86%E7%9A%84%E7%90%86%E8%A7%A3/" data-id="clevjmigb0003pov96e2678jh" data-title="" class="article-share-link">Share</a>
       
       
       
